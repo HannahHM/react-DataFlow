@@ -8,39 +8,44 @@ class Note extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            content: '',
-            date: '',
-            edit: false,
-            del: false
+            list: typeof localStorage.getItem('list') === 'string' ? JSON.parse(localStorage.getItem('list')) : []
         }
     }
 
-    delNotes = ()=> {
-        this.setState({
-            del: false
+    delNotes = (ele)=> {
+        const { list } = this.state;
+        list.map((item,idx) => {
+            if (idx === ele) {
+                list.splice(idx, 1);
+            }
         })
+        this.setState({
+            list
+        })
+        window.localStorage.setItem('list', JSON.stringify(list));
     }
 
     handleChildChange = (newState)=> {
-        console.log(newState);
         if(newState){
-            this.setState(newState);
             this.setState({
-                del: true
+                list: newState
             })
         }
       }
 
     render() {
-        const { del, content, date } = this.state;
+        const { list } = this.state;
+        const listItem = list && list.length ? list.map((item, idx) => (
+            <div key={idx} className="notes">
+                <span className="content">{item.content}</span>
+                <span className="date">{item.date}</span>
+                <a href="javascript:;" className="del-note" onClick={ () => { this.delNotes(idx) } }>删除</a>
+            </div>
+        )) : '';
         return (
             <div className="note-item">
                 <NoteSaved item={ this.state } onChange={ this.handleChildChange }/>
-                <div className="notes" style={{ display: del ? 'flex' : 'none'} }>
-                    <span className="content">{content}</span>
-                    <span className="date">{date}</span>
-                    <a href="javascript:;" className="del-note" onClick={ this.delNotes }>删除</a>
-                </div>
+                {listItem}
             </div>
         );
     }

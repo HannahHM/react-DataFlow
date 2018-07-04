@@ -10,24 +10,24 @@ class NoteSaved extends Component {
     }
 
     getInputValue = (e) => {
-        console.log(e.target.value);
         this.setState({
             content: e.target.value,
         })
     }
 
     editSaved() {
+        const { item } = this.props;
         let date = new Date();
-        let newState = {
+        let newState = item.list.concat({
             content: this.state.content,
             date: date.toLocaleTimeString()
-        };
+        });
         this.props.onChange(newState);
+        localStorage.setItem('list', JSON.stringify(newState));
     }
 
     render() {
-        const { item } = this.props;
-        return (
+        return ( 
             <div className="edit">
                 <span className="title">ToDoList</span>
                 <div className="add">
